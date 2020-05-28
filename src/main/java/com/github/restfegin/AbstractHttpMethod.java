@@ -1,7 +1,6 @@
 package com.github.restfegin;
 
 import feign.FeignException;
-import feign.RequestTemplate;
 import feign.Response;
 import feign.codec.ErrorDecoder;
 
@@ -16,7 +15,7 @@ import java.util.Map;
 /**
  * 基础实现
  */
-abstract class AbstractHttpMethod implements HttpMethod {
+public abstract class AbstractHttpMethod implements HttpMethod {
 
     private ErrorDecoder errorDecoder = new ErrorDecoder.Default();
     private Decoder<String> defaultDecoder = new Decoder<String>() {
@@ -29,9 +28,9 @@ abstract class AbstractHttpMethod implements HttpMethod {
             }
         }
     };
-    Map<String, Collection<String>> params = new LinkedHashMap<>(1);
-    Map<String, Collection<String>> heads = new LinkedHashMap<>(1);
-    
+    protected Map<String, Collection<String>> params = new LinkedHashMap<>(1);
+    protected Map<String, Collection<String>> heads = new LinkedHashMap<>(1);
+
     /*
      * skip null value
      * */
@@ -77,9 +76,6 @@ abstract class AbstractHttpMethod implements HttpMethod {
         }
     }
 
-    @Override
-    public abstract void encodeRequestBody(RequestTemplate template);
-
-    abstract Response doExecutor();
+    protected abstract Response doExecutor();
 
 }
