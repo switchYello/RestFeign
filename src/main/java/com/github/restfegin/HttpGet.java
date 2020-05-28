@@ -16,7 +16,7 @@ class HttpGet extends AbstractHttpMethod {
     private URI uri;
     private RestFeign restFeign;
 
-    public HttpGet(String uri, RestFeign restFeign) {
+    HttpGet(String uri, RestFeign restFeign) {
         this.uri = URI.create(uri);
         this.restFeign = restFeign;
     }

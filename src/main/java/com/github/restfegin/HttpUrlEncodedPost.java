@@ -18,7 +18,7 @@ class HttpUrlEncodedPost extends AbstractHttpMethod {
     private URI uri;
     private RestFeign restFeign;
 
-    public HttpUrlEncodedPost(String uri, RestFeign restFeign) {
+    HttpUrlEncodedPost(String uri, RestFeign restFeign) {
         this.uri = URI.create(uri);
         this.restFeign = restFeign;
         init();
@@ -56,10 +56,10 @@ class HttpUrlEncodedPost extends AbstractHttpMethod {
     }
 
     private static StringBuilder join(String field, Collection<String> values) {
-        Iterator<String> iterator = values.iterator();
         StringBuilder sb = new StringBuilder();
-        while (iterator.hasNext()) {
-            sb.append(urlEncode(field)).append("=").append(urlEncode(iterator.next()));
+        field = urlEncode(field);
+        for (Iterator<String> iterator = values.iterator(); iterator.hasNext(); ) {
+            sb.append(field).append("=").append(urlEncode(iterator.next()));
             if (iterator.hasNext()) {
                 sb.append("&");
             }
