@@ -1,5 +1,6 @@
 package com.github.restfegin;
 
+import feign.Request;
 import feign.RequestTemplate;
 import feign.Response;
 
@@ -15,23 +16,33 @@ import java.util.Map;
 class HttpUrlEncodedPost extends AbstractHttpMethod {
 
     private URI uri;
-    private ClientInterface clientInterface;
+    private RestFeign restFeign;
 
-    public HttpUrlEncodedPost(String uri, ClientInterface clientInterface) {
+    public HttpUrlEncodedPost(String uri, RestFeign restFeign) {
         this.uri = URI.create(uri);
-        this.clientInterface = clientInterface;
+        this.restFeign = restFeign;
+        init();
+    }
+
+    private void init() {
+        addHeader("Content-Type", "application/x-www-form-urlencoded");
     }
 
     @Override
     Response doExecutor() {
-        return clientInterface.post(uri, this, this.heads);
+        return restFeign.executor(uri, this);
     }
 
     /*
-    * 处理参数的方式是将参数使用&拼接起来，并且需要url转码
-    * */
+     * 处理参数的方式是将参数使用&拼接起来，并且需要url转码
+     * */
     @Override
     public void encodeRequestBody(RequestTemplate template) {
+        //请求方式
+        template.method(Request.HttpMethod.POST);
+        //处理heads
+        template.headers(this.heads);
+        //处理参数
         StringBuilder sb = new StringBuilder();
         Iterator<Map.Entry<String, Collection<String>>> iterator = this.params.entrySet().iterator();
         while (iterator.hasNext()) {

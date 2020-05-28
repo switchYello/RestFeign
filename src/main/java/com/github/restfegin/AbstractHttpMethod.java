@@ -31,7 +31,7 @@ abstract class AbstractHttpMethod implements HttpMethod {
     };
     Map<String, Collection<String>> params = new LinkedHashMap<>(1);
     Map<String, Collection<String>> heads = new LinkedHashMap<>(1);
-
+    
     /*
      * skip null value
      * */
@@ -40,9 +40,7 @@ abstract class AbstractHttpMethod implements HttpMethod {
         if (value == null) {
             return this;
         }
-        if (params.get(key) == null) {
-            params.put(key, new ArrayList<String>(1));
-        }
+        params.computeIfAbsent(key, k -> new ArrayList<>(1));
         params.get(key).add(String.valueOf(value));
         return this;
     }
@@ -52,9 +50,7 @@ abstract class AbstractHttpMethod implements HttpMethod {
      * */
     @Override
     public HttpMethod addHeader(String key, Object value) {
-        if (heads.get(key) == null) {
-            heads.put(key, new ArrayList<String>(1));
-        }
+        heads.computeIfAbsent(key, k -> new ArrayList<>(1));
         heads.get(key).add(value == null ? "" : String.valueOf(value));
         return this;
     }

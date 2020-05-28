@@ -1,5 +1,6 @@
 package com.github.restfegin;
 
+import feign.Request;
 import feign.RequestTemplate;
 import feign.Response;
 import org.slf4j.LoggerFactory;
@@ -13,20 +14,25 @@ class HttpGet extends AbstractHttpMethod {
 
     private static org.slf4j.Logger log = LoggerFactory.getLogger(HttpGet.class);
     private URI uri;
-    private ClientInterface clientInterface;
+    private RestFeign restFeign;
 
-    public HttpGet(String uri, ClientInterface clientInterface) {
+    public HttpGet(String uri, RestFeign restFeign) {
         this.uri = URI.create(uri);
-        this.clientInterface = clientInterface;
+        this.restFeign = restFeign;
     }
 
     @Override
     Response doExecutor() {
-        return clientInterface.get(uri, this.params, this.heads);
+        return restFeign.executor(uri, this);
     }
 
     @Override
     public void encodeRequestBody(RequestTemplate template) {
-        throw new IllegalStateException("Get Method Should Don't Call [com.restfegin.HttpGet.encode]");
+        //处理请求方式
+        template.method(Request.HttpMethod.GET);
+        //处理heads
+        template.headers(this.heads);
+        //处理参数
+        template.queries(this.params);
     }
 }
