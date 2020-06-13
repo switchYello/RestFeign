@@ -3,6 +3,7 @@ package com.github.restfegin;
 import feign.FeignException;
 import feign.Response;
 import feign.codec.ErrorDecoder;
+import feign.codec.StringDecoder;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -22,7 +23,7 @@ public abstract class AbstractHttpMethod implements HttpMethod {
         @Override
         public String decoder(Response response) {
             try {
-                return (String) new feign.codec.Decoder.Default().decode(response, String.class);
+                return (String) new StringDecoder().decode(response, String.class);
             } catch (IOException e) {
                 throw new RuntimeException(errorDecoder.decode("decoder exception", response));
             }
@@ -61,11 +62,12 @@ public abstract class AbstractHttpMethod implements HttpMethod {
 
     @Override
     public <T> T executor(Decoder<T> decoder) {
-        Response response = doExecutor();
-        if (response.status() >= 200 && response.status() < 300) {
-            return decoder.decoder(response);
+        try (Response response = doExecutor()) {
+            if (response.status() >= 200 && response.status() < 300) {
+                return decoder.decoder(response);
+            }
+            throw FeignException.errorStatus("status not in [200,300)", response);
         }
-        throw FeignException.errorStatus("status not in [200,300)", response);
     }
 
     static String urlEncode(Object arg) {

@@ -22,7 +22,7 @@ class HttpGet extends AbstractHttpMethod {
     }
 
     @Override
-    Response doExecutor() {
+    protected Response doExecutor() {
         return restFeign.executor(uri, this);
     }
 
